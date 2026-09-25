@@ -16,8 +16,8 @@ export async function GET(request: Request) {
 
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-  // ✅ 지원이 중단된 1.5 모델 대신 최신 Flash 모델들로 후보 변경
-  const candidateModels = ['gemini-2.5-flash', 'gemini-2.0-flash'];
+  // ✅ 최신 지원 모델인 gemini-3.8-flash 및 gemini-2.5-flash로 업데이트
+  const candidateModels = ['gemini-3.8-flash', 'gemini-2.5-flash'];
   let lastError: unknown = null;
 
   for (const modelName of candidateModels) {
