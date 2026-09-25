@@ -7,17 +7,17 @@ export async function GET(request: Request) {
   const place = searchParams.get('place') || '비밀의 숲';
 
   if (!process.env.GEMINI_API_KEY) {
-    console.error("❌ GEMINI_API_KEY가 .env.local 에 설정되어 있지 않습니다.");
+    console.error("❌ GEMINI_API_KEY가 설정되어 있지 않습니다.");
     return NextResponse.json(
-      { success: false, error: ".env.local 파일의 GEMINI_API_KEY 설정을 확인해 주세요." },
+      { success: false, error: "GEMINI_API_KEY 설정을 확인해 주세요." },
       { status: 500 }
     );
   }
 
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-  // 503 대응을 위한 순차 시도 모델 목록
-  const candidateModels = ['gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
+  // ✅ 지원이 중단된 1.5 모델 대신 최신 Flash 모델들로 후보 변경
+  const candidateModels = ['gemini-2.5-flash', 'gemini-2.0-flash'];
   let lastError: unknown = null;
 
   for (const modelName of candidateModels) {
@@ -69,7 +69,6 @@ Also provide a detailed English prompt describing the core visual scene for stor
     }
   }
 
-  // 모든 후보 모델 요청 실패 시
   const errorMessage = lastError instanceof Error ? lastError.message : '동화 생성 도중 오류가 발생했습니다.';
   console.error('❌ 모든 Gemini 모델 호출 최종 실패:', errorMessage);
 
