@@ -9,11 +9,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const router = useRouter();
-  const supabase = createClient();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
+
+    // ★ 빌드 타임 에러 방지: 이벤트가 발생한 시점에만 Supabase 클라이언트를 생성합니다.
+    const supabase = createClient();
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -21,7 +23,7 @@ export default function LoginPage() {
     });
 
     if (error) {
-      setErrorMsg('이메일 또는 비밀번호가 올바르지 않습니다.');
+      setErrorMsg(error.message);
     } else {
       router.push('/');
       router.refresh();
@@ -29,34 +31,27 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-16 p-8 bg-amber-50/80 rounded-2xl border border-amber-200 shadow-md">
-      <h2 className="text-2xl font-bold text-amber-900 mb-6 text-center">로그인</h2>
-      {errorMsg && <p className="text-red-500 text-sm mb-4">{errorMsg}</p>}
-      <form onSubmit={handleLogin} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-amber-900 mb-1">이메일</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full px-4 py-2 rounded-lg border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-amber-900 mb-1">비밀번호</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full px-4 py-2 rounded-lg border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold shadow-md transition"
-        >
+    <div className="flex flex-col items-center justify-center min-h-screen py-2">
+      <form onSubmit={handleLogin} className="flex flex-col gap-4 w-80">
+        <h1 className="text-2xl font-bold text-center">로그인</h1>
+        {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
+        <input
+          type="email"
+          placeholder="이메일"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="border p-2 rounded"
+          required
+        />
+        <input
+          type="password"
+          placeholder="비밀번호"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="border p-2 rounded"
+          required
+        />
+        <button type="submit" className="bg-green-600 text-white p-2 rounded hover:bg-green-700">
           로그인
         </button>
       </form>
